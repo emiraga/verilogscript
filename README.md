@@ -16,7 +16,7 @@ New keywords
 Most keywords from verilog are supported here as well, some additional have been added.
 
  * `elif`
-       Transforms into `else if(...)`.
-       For example: `if(...) begin end else if(...) begin end`
- * `pipeline` **TODO**
+Transforms into `else if`.
+ * `pipeline`
+**TODO**
 
