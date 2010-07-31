@@ -1,0 +1,4 @@
+.git
+.coverage
+*.pyc
+htmlcov

@@ -1,0 +1,117 @@
+
+module name (params);
+  ...
+endmodule
+
+function name;
+   ...
+endfunction
+
+primitive name(params);
+...
+table
+
+task name;
+  ...
+endtask
+
+
+
+always@(something)
+begin
+  ...
+end
+
+if
+begin
+  ...
+end
+
+if
+begin
+  ...
+end
+else
+begin
+  ...
+end
+
+case(some)
+   ...
+endcase
+
+casex(some)
+   ...
+endcase
+
+casez(some)
+   ...
+endcase
+
+
+while(some)
+begin
+   ...
+end
+
+for(some;some;some)
+begin
+   ...
+end
+
+repeat (some)
+begin
+   ...
+end
+
+initial
+begin
+   ...
+end
+
+always
+begin
+   ...
+end
+
+if (a)
+begin
+ ...
+e nd
+else if(b)
+begin
+  ...
+end
+else if(c)
+begin
+  ...
+else
+begin
+  ...
+end
+
+always @(some)
+begin:COUNTER
+
+end
+
+ ...
+endtable
+endprimitive
+
+forever
+begin
+  ...
+end
+
+
+
+
+generate
+   ...
+endgenerate
+
+parameter for join
+
+input|output reg|wire signed [3:4] name [1:2]
+
