@@ -51,10 +51,13 @@ def parse_line(stack, line, on_error, comment = '//'):
 def parse_script(filename, file_open, config):
 	reWhiteRest = re.compile("(\s*)(\S.*)")
 	reNotSpace = re.compile("[^ ]")
+	reBeginText = re.compile("^[a-z@]*")
+	reEndWord = re.compile("\w*$")
 	file_lines_num = enumerate(file_open, start = 1)
 	on_error = SyntaxErrorGen(file = filename)
 	out = []
-	stack = [0]
+	stack = [(0,'','')]
+	prev_special = None
 	for on_error.line, line in file_lines_num:
 		line = line.rstrip()
 		#skip empty lines
@@ -70,18 +73,25 @@ def parse_script(filename, file_open, config):
 			#out.append(" "*stack[-1]+"//"+rest[1:])
 			continue
 		#de-indentation
-		while white < stack[-1]:
-			out.append(" "*stack[-2]+"end")
+		while white < stack[-1][0]:
+			end = "end"
+			if stack[-1][1] == 'funcblock':
+				end = config.def_block[stack[-1][2]]['end']
+			out.append(" " * stack[-2][0] + end)
 			stack.pop()
-		else:
-			#add indentation
-			if white > stack[-1]:
-				out.append(" "*stack[-1]+"begin")
-				stack.append(white)
-		#check if indentation is valid
-		if white != stack[-1]:
-			raise on_error.syntax("White space missmatch")
-		brackets, rest = parse_line([], rest, on_error, comment=config.comment)
+			prev_special = None
+		#add indentation
+		if white > stack[-1][0]:
+			if prev_special is None:
+				raise on_error.syntax("Indentation error")
+			if prev_special[0] == 'statblock':
+				begin = "begin"
+				if len(prev_special[2]) > 0:
+					begin += ":" + prev_special[2]
+				out.append(" " * stack[-1][0] + begin)
+			stack.append((white, prev_special[0], prev_special[1]))
+		#start parsing potential multi-line statement
+		brackets, rest = parse_line([], rest, on_error, config.comment)
 		while True: #rest[-1] == '\\' or len(brackets) > 0:
 			if len(rest) > 0 and rest[-1] == '\\':
 				rest = rest[:-1]
@@ -96,64 +106,69 @@ def parse_script(filename, file_open, config):
 					raise on_error.syntax("Unexpected EOF"
 						", match missing for '%s'" % ''.join(brackets))
 				raise on_error.syntax("Unexpected EOF")
-			brackets, new = parse_line(brackets, new.rstrip(), on_error)
+			brackets, new = parse_line(
+					brackets, new.rstrip(), on_error, config.comment)
 			rest += new
-		out.append(" "*white+rest+';')
+		
+		start_bl = re.search(reBeginText,rest).group(0)
+		#Is this beginning of block statement?
+		if start_bl in config.statement_block or start_bl in config.def_block:
+			rest = rest[len(start_bl):].lstrip()
+			if start_bl in config.statement_block:
+				block_type = 'statblock'
+				#block name comes at the end of line
+				block_name = re.search(reEndWord,rest).group(0)
+				if len(block_name):
+					rest = rest[:-len(block_name)].rstrip()
+				#colon is requirement from python
+				if len(rest) == 0 or rest[-1] != ':':
+					raise on_error.syntax("Expected ':'")
+				rest = rest[:-1].rstrip()
+				#Should we change the name of the block?
+				if 'change_to' in config.statement_block[start_bl]:
+					output_name = config.statement_block[start_bl]['change_to']
+				else:
+					output_name = start_bl
+				#Does this statement accept more parameters?
+				if config.statement_block[start_bl]['params']:
+					if rest[0] != '(' or rest[-1] != ')':
+						out.append(" " * white + output_name + "(" + rest + ")")
+					else:
+						out.append(" " * white + output_name + " " + rest)
+				else:
+					if len(rest) > 0:
+						raise on_error.syntax("More text after '%s' keyword" % start_bl)
+					out.append(" " * white + output_name)
+			else:
+				block_type = 'funcblock'
+				block_name = ''
+				if len(rest) == 0 or rest[-1] != ':':
+					raise on_error.syntax("Expected ':'")
+				out.append(" " * white + start_bl + " " + rest[:-1] + ";")
+			prev_special = (block_type, start_bl, block_name)
+		else:
+			#regular statement
+			if rest != 'pass':
+				out.append(" " * white + rest + ';')
+			prev_special = None
+	#de-indentation
 	while len(stack) > 1:
-		out.append(stack[-2]*" "+"end")
+		end = "end"
+		if stack[-1][1] == 'funcblock':
+			end = config.def_block[stack[-1][2]]['end']
+		out.append(" " * stack[-2][0] + end)
 		stack.pop()
 	return out
-
-from StringIO import StringIO
-import unittest
-
-class TestParseLine(unittest.TestCase):
-	def setUp(self):
-		self.error = SyntaxErrorGen('file')
-	def test_one(self):
-		ae = self.assertEqual
-		ar = self.assertRaises
-		ae(parse_line([],"str",None),([],"str"))
-		ae(parse_line([],"str//add",None),([],"str"))
-		ae(parse_line([],'st"r//"add',None),([],'st"r//"add'))
-		ae(parse_line([],r'st"r\\"a//dd',None),([],r'st"r\\"a'))
-		ae(parse_line([],r'st"r\"a//dd"',None),([],r'st"r\"a//dd"'))
-		ae(parse_line([],r'st"[[}}r\"a//d"',None),([],r'st"[[}}r\"a//d"'))
-		ae(parse_line([],r'st[[ra//d}}d"',None),(['[','['],r'st[[ra'))
-		ae(parse_line([],r'st[[ra]//d}}d"',None),(['['],r'st[[ra]'))
-		ae(parse_line([],r'st[[ra](//d}}d"',None),(['[','('],r'st[[ra]('))
-		ae(parse_line([],r's[[ra](){//d}}d"',None),(['[','{'],r's[[ra](){'))
-		ae(parse_line([],r'{}{',None),(['{'],r'{}{'))
-		ae(parse_line([],'{}{\\//',None),(['{'],'{}{\\'))
-		ar(SyntaxError_, parse_line, [], r'(]',self.error)
-		ar(SyntaxError_, parse_line, [], r'[[[]]}',self.error)
-		ar(SyntaxError_, parse_line, [], r'{[[}',self.error)
-		ar(SyntaxError_, parse_line, [], r'[{{]',self.error)
-		ar(SyntaxError_, parse_line, [], r'[)',self.error)
-
-class TestParseScript(unittest.TestCase):
-	def test_one(self):
-		ae = self.assertEqual
-		ar = self.assertRaises
-		c = config.config
-		ae(parse_script("file",StringIO(""),config=c),
-				[])
-		ae(parse_script("file",StringIO("lala\n\n\na"),config=c),
-				["lala;","a;"])
-		ae(parse_script("file",StringIO("lala\n\n//com\na"),config=c),
-				["lala;","a;"])
-		ae(parse_script("file",StringIO("lala\n  one\n    two\n  three"),config=c),
-				["lala;","begin","  one;","  begin",'    two;','  end','  three;','end'])
 
 def main():
 	if len(sys.argv) < 2:
 		print("Usage: %s: <input file>"%sys.argv[0]);
 		sys.exit(-1)
 	try:
-		out = parse_script(sys.argv[1], open(sys.argv[1]))
+		out = parse_script(sys.argv[1], open(sys.argv[1]), config.config)
+		print("\n".join(out))
 	except SyntaxError_, e:
 		print("Syntax error: %s at line %d"%(e.msg, e.line))
-	print("\n".join(out))
 
 if __name__ == "__main__":
 		main()

@@ -77,7 +77,7 @@ end
 if (a)
 begin
  ...
-e nd
+end
 else if(b)
 begin
   ...
