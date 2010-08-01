@@ -4,8 +4,8 @@ Introduction
 VerilogScript adds couple of things to regular Verilog:
 
  * Python-like block declarations, [Off-side rule](http://en.wikipedia.org/wiki/Off-side_rule).
- * New keywords and operators
- * Automated pipeline generation **TODO**
+ * New keywords and operators.
+ * Automated pipeline generation *TODO*.
 
 Motivation
 ----------
@@ -27,10 +27,10 @@ Most operators from verilog are supported here as well, some additional have bee
 
  * `pipeline`
 
-   **TODO**
+   *TODO*.
 
 Coding standards
 ================
 
-Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilema of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
+Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilemma of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
 
