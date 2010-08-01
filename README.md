@@ -19,15 +19,15 @@ Most operators from verilog are supported here as well, some additional have bee
 
  * `elif`
 
-Transforms into `else if`. Term `elif` originates from Python.
+   Transforms into `else if`. Term `elif` originates from Python.
 
- * operator `:=`
+ * `:=`
 
-Statement `a := b` in VerilogScript is converted into `assign a = b;` in Verilog. I remember operator `:=` from Pascal.
+   Statement `a := b` in VerilogScript is converted into `assign a = b;` in Verilog.
 
  * `pipeline`
 
-**TODO**
+   **TODO**
 
 Coding standards
 ================
