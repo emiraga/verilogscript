@@ -30,7 +30,8 @@ def parse_line(stack, line, on_error, comment = '//'):
 			if line[i] == '"':
 				open_str = True
 			elif line[i:i+len(comment)] == comment:
-				return stack, line[0:i]
+				line = line[0:i]
+				break
 			elif line[i] == '(' or line[i] == '{' or line[i] == '[':
 				stack.append(line[i])
 			elif line[i] == ')':
@@ -53,11 +54,23 @@ def parse_script(filename, file_open, config):
 	reNotSpace = re.compile("[^ ]")
 	reBeginText = re.compile("^[a-z@]*")
 	reEndWord = re.compile("\w*$")
+	reAssignOp = re.compile("^(.+?)\s*:=\s*")
 	file_lines_num = enumerate(file_open, start = 1)
 	on_error = SyntaxErrorGen(file = filename)
 	out = []
 	stack = [(0,'','')]
 	prev_special = None
+	
+	def de_indent():
+		if stack[-1][1] == 'funcblock':
+			end = config.def_block[stack[-1][2]]['end']
+		else:
+			end = "end"
+		out.append(" " * stack[-2][0] + end)
+		#print('removing',stack[-1])
+		stack.pop()
+		prev_special = None
+	
 	for on_error.line, line in file_lines_num:
 		line = line.rstrip()
 		#skip empty lines
@@ -70,26 +83,26 @@ def parse_script(filename, file_open, config):
 		#skip comments
 		if rest.startswith(config.comment):
 			#should comments fall through?
-			#out.append(" "*stack[-1]+"//"+rest[1:])
+			out.append(" " * white+"//"+rest[len(config.comment):])
 			continue
-		#de-indentation
-		while white < stack[-1][0]:
-			end = "end"
-			if stack[-1][1] == 'funcblock':
-				end = config.def_block[stack[-1][2]]['end']
-			out.append(" " * stack[-2][0] + end)
-			stack.pop()
-			prev_special = None
-		#add indentation
-		if white > stack[-1][0]:
-			if prev_special is None:
-				raise on_error.syntax("Indentation error")
-			if prev_special[0] == 'statblock':
-				begin = "begin"
-				if len(prev_special[2]) > 0:
-					begin += ":" + prev_special[2]
-				out.append(" " * stack[-1][0] + begin)
-			stack.append((white, prev_special[0], prev_special[1]))
+		if white == stack[-1][0]:
+			if prev_special is not None:
+				raise on_error.syntax("Missing indented block")
+		else:
+			#remove indentation
+			while white < stack[-1][0]:
+				de_indent()
+			#add indentation
+			if white > stack[-1][0]:
+				if prev_special is None:
+					raise on_error.syntax("Indentation error")
+				if prev_special[0] == 'statblock':
+					begin = "begin"
+					if len(prev_special[2]) > 0:
+						begin += ":" + prev_special[2]
+					out.append(" " * stack[-1][0] + begin)
+				stack.append((white, prev_special[0], prev_special[1]))
+				#print('adding',stack[-1])
 		#start parsing potential multi-line statement
 		brackets, rest = parse_line([], rest, on_error, config.comment)
 		while True: #rest[-1] == '\\' or len(brackets) > 0:
@@ -149,15 +162,15 @@ def parse_script(filename, file_open, config):
 		else:
 			#regular statement
 			if rest != 'pass':
-				out.append(" " * white + rest + ';')
+				rest = re.sub(reAssignOp, "assign \\1 = ", rest)
+				if rest.startswith('`define') or rest.startswith('`include') or rest.endswith(';'):
+					out.append(" " * white + rest)
+				else:
+					out.append(" " * white + rest + ';')
 			prev_special = None
-	#de-indentation
+	#remove indentation at the end
 	while len(stack) > 1:
-		end = "end"
-		if stack[-1][1] == 'funcblock':
-			end = config.def_block[stack[-1][2]]['end']
-		out.append(" " * stack[-2][0] + end)
-		stack.pop()
+		de_indent()
 	return out
 
 def main():
@@ -171,5 +184,5 @@ def main():
 		print("Syntax error: %s at line %d"%(e.msg, e.line))
 
 if __name__ == "__main__":
-		main()
+	main()
 

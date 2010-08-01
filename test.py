@@ -13,7 +13,7 @@ class TestParseScript(unittest.TestCase):
 		ae(parse_script("file",StringIO("lala\n\n\na"), c),
 			["lala;","a;"])
 		ae(parse_script("file",StringIO("lala\n\n//com\na"), c),
-			["lala;","a;"])
+			["lala;",'//com',"a;"])
 		ae(parse_script("file",StringIO("if 3:\n  if 4:\n    two\n  three"), c),
 			["if(3)","begin","  if(4)","  begin",
 			'    two;','  end','  three;','end'])
@@ -40,7 +40,11 @@ class TestParseScript(unittest.TestCase):
 		ae(parse_script("file",StringIO("(34\n45)"), c), ["(34 45);"])
 		ar(SyntaxError_,parse_script,"file",StringIO("\\"), c)
 		ar(SyntaxError_,parse_script,"file",StringIO("("), c)
-
+		ar(SyntaxError_,parse_script,"file",StringIO("if 3:\nif 4:"), c)
+		ae(parse_script("file",StringIO("a:=b"), c),["assign a = b;"])
+		ae(parse_script("file",StringIO("a  :=  b    "), c),["assign a = b;"])
+		ae(parse_script("file",StringIO("a : = b"), c),["a : = b;"])
+		ae(parse_script("file",StringIO("{a1,a2}:=b"), c),["assign {a1,a2} = b;"])
 class TestParseLine(unittest.TestCase):
 	def setUp(self):
 		self.error = SyntaxErrorGen('file')
