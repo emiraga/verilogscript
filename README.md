@@ -29,6 +29,38 @@ Most operators from verilog are supported here as well, some additional have bee
 
    *TODO*.
 
+Example
+=======
+Copied from [here](http://www.asic-world.com/verilog/syntax2.html)
+
+     module dff (q, q_bar, clk, d, rst, pre);
+     input clk, d, rst, pre;
+     output q, q_bar;
+     reg q;
+     assign q_bar = ~q;
+     always @ (posedge clk)
+     if (rst == 1'b1) begin
+       q <= 0;
+     end else if (pre == 1'b1) begin
+       q <= 1;
+     end else begin
+       q <= d;
+     end
+     endmodule
+
+That was Verilog, now in VerilogScript:
+
+     module dff (input clk, input d, input rst, input pre, output q, output q_bar):
+         reg q
+         q_bar := ~q
+         always@ posedge clk:
+            if rst == 1'b1:
+               q <= 0
+            elif pre == 1'b1:
+               q <= 1
+            else:
+               q <= d
+
 Coding standards
 ================
 
