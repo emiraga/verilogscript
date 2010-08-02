@@ -12,22 +12,20 @@ Motivation
 
 I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog might be missing some advances in terms of it's syntax that modern languages such as python are offering. At some point I hit "the wall" and decided to start the VerilogScript. This is not a real parser/programming language (at least it is not yet), instead it is set of rules for text transformation, that are going to morph a certain VerilogScript syntax into a valid Verilog code. It's syntax is mostly of Verilog with some elements of python.
 
-New operators
-=============
+New operators/keywords
+======================
 
 Most operators from verilog are supported here as well, some additional have been added.
 
- * `elif`
+ * `elif` is transformed into `else if`. This term originates from Python.
 
-   Transforms into `else if`. Term `elif` originates from Python.
+ * `:=` short replacement for `assign`. For example, statement `a := b` in VerilogScript is converted into `assign a = b;`.
 
- * `:=`
+ * `pass` is a statement that does nothing. Can be, used as a place-holder for a function or conditional body that is not yet implemented. Name originates from a Python.
+       while enable:
+	       pass
 
-   Statement `a := b` in VerilogScript is converted into `assign a = b;` in Verilog.
-
- * `pipeline`
-
-   *TODO*.
+ * `pipeline` *TODO*.
 
 Example
 =======
