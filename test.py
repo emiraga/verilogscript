@@ -1,5 +1,5 @@
 import unittest
-from scriptmain import parse_script, SyntaxError_, parse_line, SyntaxErrorGen
+from vsparser import parse_script, SyntaxError_, parse_line, SyntaxErrorGen
 from StringIO import StringIO
 import config
 

@@ -10,20 +10,20 @@ VerilogScript adds couple of things to regular Verilog:
 Motivation
 ----------
 
-I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog might be missing some advances in terms of it's syntax that modern languages such as python are offering. At some point I hit "the wall" and decided to start the VerilogScript. This is not a real parser/programming language (at least it is not yet), instead it is set of rules for text transformation, that are going to morph a certain VerilogScript syntax into a valid Verilog code. It's syntax is mostly of Verilog with some elements of python.
+I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog is missing some advances (in terms of it's syntax) that modern languages such as python are offering. At some point of using Verilog I hit "the wall", and decided to start the VerilogScript. This is not a real parser/programming language (at least not yet), instead it is set of rules for text transformation that are going to morph a certain VerilogScript syntax into a valid Verilog code.
 
 New operators/keywords
 ======================
 
-Most operators from verilog are supported here as well, some additional have been added.
+Most operators/keywords from verilog are supported, some additional have been added.
 
  * `elif` is transformed into `else if`. This term originates from [python](http://docs.python.org/tutorial/controlflow.html#if-statements).
 
- * `:=` short replacement for `assign`. For example, statement `a := b` in VerilogScript is converted into `assign a = b;`.
+ * `:=` is shortcut for `assign`. For example, statement `a := b` in VerilogScript is converted into `assign a = b;`.
 
  * `pass` is a statement that does nothing. Can be used as a place-holder for a function or conditional body that is not yet implemented. Name originates from [python](http://docs.python.org/tutorial/controlflow.html#pass-statements).
        while enable:
-	       pass
+           pass
 
  * `pipeline` *TODO*.
 
@@ -94,3 +94,11 @@ And VerilogScript:
                 while enable:
                     count <= count + 1
                     disable COUNT
+
+Simple:
+
+    always @ posedge clock:
+        if reset:
+            q <= 0
+        else:
+            q <= d
