@@ -109,7 +109,7 @@ def parse_script(filename, file_open, config):
 			if len(rest) > 0 and rest[-1] == '\\':
 				rest = rest[:-1]
 			elif len(brackets) > 0:
-				rest += " "
+				rest += "\n"
 			else:
 				break #end of multi-line statement
 			try:
@@ -128,6 +128,7 @@ def parse_script(filename, file_open, config):
 		if start_bl in config.statement_block or start_bl in config.def_block:
 			rest = rest[len(start_bl):].lstrip()
 			if start_bl in config.statement_block:
+				#Start of a statement block (while, if, for, etc.)
 				block_type = 'statblock'
 				#block name comes at the end of line
 				block_name = re.search(reEndWord,rest).group(0)
@@ -156,10 +157,12 @@ def parse_script(filename, file_open, config):
 					else:
 						out.append(" " * white + output_name + " " + rest)
 				else:
+					#No more parameters are needed
 					if len(rest) > 0:
 						raise on_error.syntax("More text after '%s' keyword" % start_bl)
 					out.append(" " * white + output_name)
 			else:
+				#Start of functional block (module, function, etc.)
 				block_type = 'funcblock'
 				block_name = ''
 				if len(rest) == 0 or rest[-1] != ':':
@@ -167,7 +170,7 @@ def parse_script(filename, file_open, config):
 				out.append(" " * white + start_bl + " " + rest[:-1] + ";")
 			prev_special = (block_type, start_bl, block_name)
 		else:
-			#regular statement
+			#Regular statement
 			if rest != 'pass':
 				rest = re.sub(reAssignOp, "assign \\1 = ", rest)
 				if rest.startswith('`define') or rest.startswith('`include') or rest.endswith(';'):
