@@ -52,7 +52,7 @@ def parse_line(stack, line, on_error, comment = '//'):
 def parse_script(filename, file_open, config):
 	reWhiteRest = re.compile("(\s*)(\S.*)")
 	reNotSpace = re.compile("[^ ]")
-	reBeginText = re.compile("^[a-z@]*")
+	reBeginText = re.compile("^[a-z]*")
 	reEndWord = re.compile("\w*$")
 	reAssignOp = re.compile("^(.+?)\s*:=\s*")
 	file_lines_num = enumerate(file_open, start = 1)
@@ -143,7 +143,14 @@ def parse_script(filename, file_open, config):
 				else:
 					output_name = start_bl
 				#Does this statement accept more parameters?
-				if config.statement_block[start_bl]['params']:
+				more_params = config.statement_block[start_bl]['params']
+				if 'at_params' in config.statement_block[start_bl] and len(rest) > 0:
+					if rest[0] != '@':
+						raise on_error.syntax("Expected '@'")
+					more_params = True
+					rest = rest[1:].lstrip()
+					output_name += ' @ '
+				if more_params:
 					if rest[0] != '(' or rest[-1] != ')':
 						out.append(" " * white + output_name + "(" + rest + ")")
 					else:

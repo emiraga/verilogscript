@@ -32,7 +32,7 @@ Most operators from verilog are supported here as well, some additional have bee
 Example
 =======
 
-Copied from [here](http://www.asic-world.com/verilog/syntax2.html), a flip-flop:
+Copied and simplified from [here](http://www.asic-world.com/verilog/syntax2.html), a flip-flop:
 
     module dff (q, q_bar, clk, d, rst, pre);
         input clk, d, rst, pre;
@@ -40,23 +40,23 @@ Copied from [here](http://www.asic-world.com/verilog/syntax2.html), a flip-flop:
         reg q;
         assign q_bar = ~q;
         always @ (posedge clk)
-        if (rst == 1'b1) begin
+        if (rst) begin
             q <= 0;
-        end else if (pre == 1'b1) begin
+        end else if (pre) begin
             q <= 1;
         end else begin
             q <= d;
         end
     endmodule
 
-That was Verilog, and now VerilogScript:
+VerilogScript:
 
     module dff (input clk, input d, input rst, input pre, output reg q, output q_bar):
         q_bar := ~q
-        always@ posedge clk:
-            if rst == 1'b1:
+        always @ posedge clk:
+            if rst:
                 q <= 0
-            elif pre == 1'b1:
+            elif pre:
                 q <= 1
             else:
                 q <= d
@@ -86,8 +86,10 @@ Copied from [here](http://www.asic-world.com/verilog/verilog_one_day2.html), str
     end
     endmodule
 
-    module counter (input clk,input rst, input enable, output reg [3:0] count):
-        always@ posedge clk or posedge rst:
+And VerilogScript:
+
+    module counter (input clk, input rst, input enable, output reg [3:0] count):
+        always @ posedge clk or posedge rst:
             if rst:
                 count <= 0
             else: COUNT

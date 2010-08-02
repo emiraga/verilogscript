@@ -45,6 +45,12 @@ class TestParseScript(unittest.TestCase):
 		ae(parse_script("file",StringIO("a  :=  b    "), c),["assign a = b;"])
 		ae(parse_script("file",StringIO("a : = b"), c),["a : = b;"])
 		ae(parse_script("file",StringIO("{a1,a2}:=b"), c),["assign {a1,a2} = b;"])
+		ae(parse_script("file",StringIO("always:\n  a"), c),["always","begin","  a;","end"])
+		ae(parse_script("file",StringIO("always  @  4  :\n  a"), c),["always @ (4)","begin","  a;","end"])
+		ar(SyntaxError_, parse_script, "file", StringIO("always  4  :\n  a"), c)
+		ae(parse_script("file",StringIO("`define SOME\n`include ELSE"), c),
+			["`define SOME","`include ELSE"])
+
 class TestParseLine(unittest.TestCase):
 	def setUp(self):
 		self.error = SyntaxErrorGen('file')

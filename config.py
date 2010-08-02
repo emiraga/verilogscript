@@ -11,8 +11,7 @@ class config:
 	statement_block = {
 		'if':{'params':True,},
 		'else':{'params':False,},
-		'always@':{'params':True,},
-		'always':{'params':False,},
+		'always':{'params':False,'at_params':True},
 		'repeat':{'params':True,},
 		'while':{'params':True,},
 		'elif':{'params':True, 'change_to':'else if' },
