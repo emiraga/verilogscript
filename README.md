@@ -17,11 +17,11 @@ New operators/keywords
 
 Most operators from verilog are supported here as well, some additional have been added.
 
- * `elif` is transformed into `else if`. This term originates from Python.
+ * `elif` is transformed into `else if`. This term originates from [python](http://docs.python.org/tutorial/controlflow.html#if-statements).
 
  * `:=` short replacement for `assign`. For example, statement `a := b` in VerilogScript is converted into `assign a = b;`.
 
- * `pass` is a statement that does nothing. Can be, used as a place-holder for a function or conditional body that is not yet implemented. Name originates from a Python.
+ * `pass` is a statement that does nothing. Can be used as a place-holder for a function or conditional body that is not yet implemented. Name originates from [python](http://docs.python.org/tutorial/controlflow.html#pass-statements).
        while enable:
 	       pass
 
