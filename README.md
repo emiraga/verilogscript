@@ -12,12 +12,16 @@ Motivation
 
 I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog is missing some advances (in terms of it's syntax) that modern languages such as python are offering. At some point of using Verilog I hit "the wall", and decided to start the VerilogScript. This is not a real parser/programming language (at least not yet), instead it is set of rules for text transformation that are going to morph a certain VerilogScript syntax into a valid Verilog code.
 
+    always @ posedge clock:
+        if reset:
+            q <= 0
+        else:
+            q <= d
+
 New operators/keywords
 ======================
 
-Most operators/keywords from verilog are supported, some additional have been added.
-
- * `elif` is transformed into `else if`. This term originates from [python](http://docs.python.org/tutorial/controlflow.html#if-statements).
+ * `elif` is an equivalent of `else if`. This term originates from [python](http://docs.python.org/tutorial/controlflow.html#if-statements).
 
  * `:=` is shortcut for `assign`. For example, statement `a := b` in VerilogScript is converted into `assign a = b;`.
 
@@ -59,6 +63,8 @@ VerilogScript:
             else:
                 q <= d
 
+(Note: Ability to specify type/width of port inside a module declaration is already available in Verilog 2005)
+
 Coding standards
 ================
 
@@ -94,11 +100,3 @@ And VerilogScript:
                 while enable:
                     count <= count + 1
                     disable COUNT
-
-Simple:
-
-    always @ posedge clock:
-        if reset:
-            q <= 0
-        else:
-            q <= d
