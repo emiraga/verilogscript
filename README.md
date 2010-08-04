@@ -10,7 +10,7 @@ VerilogScript adds couple of things to regular Verilog:
 Motivation
 ----------
 
-I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog is missing some advances (in terms of it's syntax) that modern languages such as python are offering. At some point of using Verilog I hit "the wall", and decided to start the VerilogScript. This is not a real parser/programming language (at least not yet), instead it is set of rules for text transformation that are going to morph a certain VerilogScript syntax into a valid Verilog code.
+I am very new to Verilog as a programming language. I was working on some design, when I started to wonder that perhaps Verilog is missing some advances (in terms of it's syntax) that modern languages such as python are offering. I decided to start the VerilogScript. It is not a real parser/programming language (at least not yet), instead it is set of rules for text transformation that are going to morph a certain VerilogScript syntax into a Verilog code.
 
     always @ posedge clock:
         if reset:
@@ -99,7 +99,7 @@ And VerilogScript:
 Coding standards
 ================
 
-Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilemma of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
+Verilog inherits a preprocessor from C/C++, however Python specifically is against it. Therefore, I am in dilemma of whether preprocessor is needed in VerilogScript. For now, I recommend usage of Verilog preprocessor only for defining constants (any alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
 
 Compilation errors
 ==================
@@ -115,6 +115,21 @@ With first parameter `examples/simple.vs` will tell VerilogScript to convert thi
 You can mix between `.vs` and `.v` files in parameters, you may also specify additional compiler options, for example:
 
     VerilogScript.py file1.v file2.vs file3.v -e "iverilog -o sim.out"
+
+Multi-line statements
+=====================
+
+Except for blank lines and comments, every line is a statement. However, there are two ways to make to make one statement span multiple lines (a.k.a. multi-line statements). Firstly:
+
+    This is \
+	same statement
+
+Secondly:
+
+    This is (
+      also {
+    one single
+          statement} )
 
 Contact
 =======
