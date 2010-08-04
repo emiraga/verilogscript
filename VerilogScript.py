@@ -7,22 +7,23 @@ import os
 from convert import Converter, SyntaxError_
 import subprocess
 
-class StrException(Exception):
-	def __str__(self):
-		return self.message
-class FileNotFound(StrException):
+class FileNotFound(Exception):
 	def __init__(self, file):
 		self.message = "The file '%s' was not found." % file
-class WrongFileType(StrException):
+	def __str__(self):
+		return self.message
+class WrongFileType(Exception):
 	def __init__(self, file):
 		self.message = "File '%s' has unrecognized extension." % (file)
+	def __str__(self):
+		return self.message
 
 def process_options(argv):
 	parser = argparse.ArgumentParser(description='VerilogScript processor')
 	parser.add_argument('-e', '--execute', help="Command to execute Verilog compiler")
 	parser.add_argument('file', nargs='+')
 	args = parser.parse_args(argv)
-	exec_params = [args.execute]
+	exec_params = args.execute.split()
 	conv = Converter()
 	for file in args.file:
 		if not os.path.isfile(file):
@@ -56,9 +57,9 @@ def process_options(argv):
 def main():
 	try:
 		process_options(sys.argv[1:])
-	except SyntaxError_, e:
+	except SyntaxError_ as e:
 		print("Syntax error: %s at line %d" % (e.msg, e.line))
-	except StrException as e:
+	except (FileNotFound, WrongFileType) as e:
 		print("Error: "+str(e))
 
 if __name__ == "__main__":

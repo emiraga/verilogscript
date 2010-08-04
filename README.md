@@ -70,6 +70,15 @@ Coding standards
 
 Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilemma of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
 
+Compilation errors
+==================
+
+VerilogScript is not a compiler, instead it will generate a Verilog code which would have to be further compiled. This presents a one problem of error reporting. Verilog compiler/simulator will show error line in **generated** code and not the original code written by the programmer. To resolve this issue you should let VerilogScript.py perform compilation:
+
+    VerilogScript.py examples/simple.vs -e "iverilog -o examples/simple.out"
+
+Just with parameter `examples/simple.vs` it will convert this `.vs` file into a `.v` (overwriting previously existing one). Additional parameter `-e "iverilog"` executes a compiler after conversion is done.
+
 More examples
 =============
 
@@ -100,3 +109,4 @@ And VerilogScript:
                 while enable:
                     count <= count + 1
                     disable COUNT
+
