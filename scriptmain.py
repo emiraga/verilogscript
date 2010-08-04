@@ -1,11 +1,11 @@
 from __future__ import print_function
 import sys
 import re
-import config
-from vsparser import parse_script, SyntaxError_
 import getopt
 import argparse
 import os
+from convert import Converter, SyntaxError_
+import subprocess
 
 class StrException(Exception):
 	def __str__(self):
@@ -13,24 +13,17 @@ class StrException(Exception):
 class FileNotFound(StrException):
 	def __init__(self, file):
 		self.message = "The file '%s' was not found." % file
-class FileNewerExists(StrException):
-	def __init__(self, file_newer, file_older):
-		self.message = "File '%s' is newer than '%s'." % (file_newer, file_older)
 class WrongFileType(StrException):
 	def __init__(self, file):
 		self.message = "File '%s' has unrecognized extension." % (file)
-
-def convert_vs(file, target_file):
-	print("convert %s to %s"%(file,target_file))
-	#out = parse_script(sys.argv[1], open(sys.argv[1]), config.config)
-	#print("\n".join(out))
 
 def process_options(argv):
 	parser = argparse.ArgumentParser(description='VerilogScript processor')
 	parser.add_argument('-e', '--execute', help="Command to execute Verilog compiler")
 	parser.add_argument('file', nargs='+')
 	args = parser.parse_args(argv)
-	exec_params = []
+	exec_params = [args.execute]
+	conv = Converter()
 	for file in args.file:
 		if not os.path.isfile(file):
 			raise FileNotFound(file)
@@ -38,14 +31,28 @@ def process_options(argv):
 			exec_params.append(file)
 		elif file.endswith('.vs'):
 			target_file = file[:-1] #remove ending 's'
-			if os.path.exists(target_file) and \
-				os.path.getmtime(target_file) > os.path.getmtime(file):
-				raise FileNewerExists(target_file, file)
-			convert_vs(file, target_file)
+			conv.convert_vs(file, target_file)
 			exec_params.append(target_file)
 		else:
 			raise WrongFileType(file)
-
+	if exec_params[0]:
+		#print("EXEC"," ".join(exec_params))
+		p = subprocess.Popen(exec_params, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		#print('out',p.stdout.read())
+		for line in p.stdout:
+			print(line, end="")
+		error = False
+		for line in p.stderr:
+			error = True
+			line = line.rstrip()
+			parts = line.split(':',2)
+			if len(parts) > 2:
+				parts[0], parts[1] = conv.convert_error(parts[0], int(parts[1]))
+				print('%s:%d:%s' %(parts[0], parts[1], parts[2]))
+			else:
+				print(line)
+		if error:
+			sys.exit(-1)
 def main():
 	try:
 		process_options(sys.argv[1:])

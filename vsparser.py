@@ -64,10 +64,11 @@ def parse_script(filename, file_open, config):
 		else:
 			end = "end"
 		out.append(" " * stack[-2][0] + end)
+		line_map[len(out)] = on_error.line
 		#print('removing',stack[-1])
 		stack.pop()
 		prev_special = None
-	
+	line_map = {}
 	for on_error.line, line in file_lines_num:
 		line = line.rstrip()
 		#skip empty lines
@@ -81,6 +82,7 @@ def parse_script(filename, file_open, config):
 		if rest.startswith(config.comment):
 			#should comments fall through?
 			out.append(" " * white+"//"+rest[len(config.comment):])
+			line_map[len(out)] = on_error.line
 			continue
 		if white == stack[-1][0]:
 			if prev_special is not None:
@@ -98,6 +100,7 @@ def parse_script(filename, file_open, config):
 					if len(prev_special[2]) > 0:
 						begin += ":" + prev_special[2]
 					out.append(" " * stack[-1][0] + begin)
+					line_map[len(out)] = on_error.line
 				stack.append((white, prev_special[0], prev_special[1]))
 				#print('adding',stack[-1])
 		#start parsing potential multi-line statement
@@ -190,7 +193,8 @@ def parse_script(filename, file_open, config):
 				else:
 					out.append(" " * white + rest + ';')
 			prev_special = None
+		line_map[len(out)] = on_error.line
 	#remove indentation at the end
 	while len(stack) > 1:
 		de_indent()
-	return out
+	return out, line_map

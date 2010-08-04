@@ -1,3 +1,4 @@
+
 module counter (input clk, input rst, input enable, output reg [3:0] count):
 	always @ posedge clk or posedge rst:
 		if rst:
