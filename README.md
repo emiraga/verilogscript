@@ -63,7 +63,7 @@ VerilogScript:
             else:
                 q <= d
 
-(Note: Ability to specify type/width of port inside a module declaration is already available in Verilog 2005)
+(Note: Ability to specify type/width of port inside a module declaration is already available in Verilog 2005.)
 
 Coding standards
 ================

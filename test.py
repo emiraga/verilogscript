@@ -51,6 +51,10 @@ class TestParseScript(unittest.TestCase):
 		ar(SyntaxError_, parse_script, "file", StringIO("always  4  :\n  a"), c)
 		ae(parse_script("file",StringIO("`define SOME\n`include ELSE"), c),
 			["`define SOME","`include ELSE"])
+		ae(parse_script("file",StringIO("case var:\n  0: a=2\n  1: a=3\n"), c),
+			["case (var)","  0: a=2;","  1: a=3;","endcase"])
+		ae(parse_script("file",StringIO("table:\n  0 2\n  1 3\n"), c),
+			["table","  0 2;","  1 3;","endtable"])
 
 class TestParseLine(unittest.TestCase):
 	def setUp(self):

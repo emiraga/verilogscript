@@ -33,15 +33,15 @@ def parse_line(stack, line, on_error, comment = '//'):
 				stack.append(line[i])
 			elif line[i] == ')':
 				if stack[-1] != '(':
-					raise on_error.syntax("Missmatched ')'");
+					raise on_error.syntax("Missmatched ')'")
 				stack.pop()
 			elif line[i] == ']':
 				if stack[-1] != '[':
-					raise on_error.syntax("Missmatched ']'");
+					raise on_error.syntax("Missmatched ']'")
 				stack.pop()
 			elif line[i] == '}':
 				if stack[-1] != '{':
-					raise on_error.syntax("Missmatched '}'");
+					raise on_error.syntax("Missmatched '}'")
 				stack.pop()
 		i += 1
 	return stack, line
@@ -60,7 +60,7 @@ def parse_script(filename, file_open, config):
 	
 	def de_indent():
 		if stack[-1][1] == 'funcblock':
-			end = config.def_block[stack[-1][2]]['end']
+			end = config.functional_block[stack[-1][2]]['end']
 		else:
 			end = "end"
 		out.append(" " * stack[-2][0] + end)
@@ -123,7 +123,7 @@ def parse_script(filename, file_open, config):
 		
 		start_bl = re.search(reBeginText,rest).group(0)
 		#Is this beginning of block statement?
-		if start_bl in config.statement_block or start_bl in config.def_block:
+		if start_bl in config.statement_block or start_bl in config.functional_block:
 			rest = rest[len(start_bl):].lstrip()
 			if start_bl in config.statement_block:
 				#Start of a statement block (while, if, for, etc.)
@@ -165,13 +165,27 @@ def parse_script(filename, file_open, config):
 				block_name = ''
 				if len(rest) == 0 or rest[-1] != ':':
 					raise on_error.syntax("Expected ':'")
-				out.append(" " * white + start_bl + " " + rest[:-1] + ";")
+				rest = rest[:-1]
+				#add brackets if needed, default=False
+				if 'putbrackets' in config.functional_block[start_bl] and \
+						config.functional_block[start_bl]['putbrackets']:
+					rest = '('+rest+')'
+				#add semicolon if needed, default=True
+				if 'semicolon' not in config.functional_block[start_bl] or \
+						 config.functional_block[start_bl]['semicolon']:
+					rest += ";"
+				if len(rest) > 0:
+					rest = " " + rest
+				#write beginning of functional block
+				out.append(" " * white + start_bl + rest)
+			#mark that this statement is of block start
 			prev_special = (block_type, start_bl, block_name)
 		else:
 			#Regular statement
 			if rest != 'pass':
 				rest = re.sub(reAssignOp, "assign \\1 = ", rest)
-				if rest.startswith('`define') or rest.startswith('`include') or rest.endswith(';'):
+				if rest.startswith('`define') or \
+						rest.startswith('`include') or rest.endswith(';'):
 					out.append(" " * white + rest)
 				else:
 					out.append(" " * white + rest + ';')
