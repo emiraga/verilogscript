@@ -119,12 +119,12 @@ You can mix between `.vs` and `.v` files in parameters, you may also specify add
 Multi-line statements
 =====================
 
-Except for blank lines and comments, every line is a statement. However, there are two ways to make to make one statement span multiple lines (a.k.a. multi-line statements). Firstly:
+Except for blank lines and comments, every line is a statement. However, there are two ways to make single statement span multiple lines (a.k.a. multi-line statements). Ending a line with back-slash:
 
     This is \
 	same statement
 
-Secondly:
+And second way is with brackets:
 
     This is (
       also {

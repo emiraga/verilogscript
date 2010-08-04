@@ -103,7 +103,8 @@ def parse_script(filename, file_open, config):
 					line_map[len(out)] = on_error.line
 				stack.append((white, prev_special[0], prev_special[1]))
 				#print('adding',stack[-1])
-		#start parsing potential multi-line statement
+		#start parsing for a potential multi-line statement
+		statement_start = on_error.line
 		brackets, rest = parse_line([], rest, on_error, config.comment)
 		while True: #rest[-1] == '\\' or len(brackets) > 0:
 			if len(rest) > 0 and rest[-1] == '\\':
@@ -117,8 +118,8 @@ def parse_script(filename, file_open, config):
 				on_error.line, new = file_lines_num.next()
 			except StopIteration:
 				if len(brackets):
-					raise on_error.syntax("Unexpected EOF"
-						", match missing for '%s'" % ''.join(brackets))
+					raise on_error.syntax("Unexpected EOF, match missing for '%s', "
+						"multi-line statement started in line %d." % (''.join(brackets), statement_start))
 				raise on_error.syntax("Unexpected EOF")
 			brackets, new = parse_line(
 					brackets, new.rstrip(), on_error, config.comment)
