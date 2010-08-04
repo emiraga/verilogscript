@@ -73,11 +73,17 @@ Verilog inherits a preprocessor from C/C++, however Python specifically speaks a
 Compilation errors
 ==================
 
-VerilogScript is not a compiler, instead it will generate a Verilog code which would have to be further compiled. This presents a one problem of error reporting. Verilog compiler/simulator will show error line in **generated** code and not the original code written by the programmer. To resolve this issue you should let VerilogScript.py perform compilation:
+VerilogScript is not a compiler, instead it will generate a Verilog code which would have to be further compiled. This presents a problem of error reporting. Verilog compiler/simulator will show error line in **generated** `.v` code and not the **original** `.vs` code written by the programmer.
 
-    VerilogScript.py examples/simple.vs -e "iverilog -o examples/simple.out"
+To resolve this issue you should let VerilogScript.py perform compilation:
 
-Just with parameter `examples/simple.vs` it will convert this `.vs` file into a `.v` (overwriting previously existing one). Additional parameter `-e "iverilog"` executes a compiler after conversion is done.
+    VerilogScript.py examples/simple.vs -e "iverilog"
+
+With first parameter `examples/simple.vs` VerilogScript will convert this `.vs` file into a `.v` (overwriting previously existing `.v` file). Additional parameter `-e "iverilog"` executes a compiler after all conversions are done.
+
+You can mix between `.vs` and `.v` files in parameters, for example:
+
+    VerilogScript.py file1.v file2.vs file3.v -e "iverilog -o sim.out"
 
 More examples
 =============
