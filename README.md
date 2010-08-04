@@ -63,30 +63,10 @@ VerilogScript:
             else:
                 q <= d
 
-(Note: Ability to specify type/width of port inside a module declaration is already available in Verilog 2005.)
+(Note: Ability to specify type/width of port inside a module declaration is available in Verilog 2005.)
 
-Coding standards
-================
-
-Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilemma of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
-
-Compilation errors
-==================
-
-VerilogScript is not a compiler, instead it will generate a Verilog code which would have to be further compiled. This presents a problem of error reporting. Verilog compiler/simulator will show error line in **generated** `.v` code and not the **original** `.vs` code written by the programmer.
-
-To resolve this issue you should let VerilogScript.py perform compilation:
-
-    VerilogScript.py examples/simple.vs -e "iverilog"
-
-With first parameter `examples/simple.vs` VerilogScript will convert this `.vs` file into a `.v` (overwriting previously existing `.v` file). Additional parameter `-e "iverilog"` executes a compiler after all conversions are done.
-
-You can mix between `.vs` and `.v` files in parameters, for example:
-
-    VerilogScript.py file1.v file2.vs file3.v -e "iverilog -o sim.out"
-
-More examples
-=============
+One more example
+----------------
 
 Copied from [here](http://www.asic-world.com/verilog/verilog_one_day2.html), strange counter: 
 
@@ -116,3 +96,27 @@ And VerilogScript:
                     count <= count + 1
                     disable COUNT
 
+Coding standards
+================
+
+Verilog inherits a preprocessor from C/C++, however Python specifically speaks against it. So, now I am in dilemma of whether preprocessor is needed. For now, I recommend usage of Verilog preprocessor only for defining constants (alternatives?). If you make your script unrecognizable with (ab)use of preprocessor, VerilogScript will fail to parse your script correctly.
+
+Compilation errors
+==================
+
+VerilogScript is not a compiler, instead it will generate a Verilog code which would have to be further compiled. This presents a problem of error reporting. Verilog compiler/simulator will show error line in **generated** `.v` code and not the **original** `.vs` code written by the programmer.
+
+To resolve this issue you should let VerilogScript.py perform compilation step:
+
+    VerilogScript.py examples/simple.vs -e "iverilog"
+
+With first parameter `examples/simple.vs` will tell VerilogScript to convert this `.vs` file into a `.v` (overwriting previously existing `.v` file). Additional parameters `-e "iverilog"` will execute a compiler after all conversions are done.
+
+You can mix between `.vs` and `.v` files in parameters, also specify additional compiler options, for example:
+
+    VerilogScript.py file1.v file2.vs file3.v -e "iverilog -o sim.out"
+
+Contact
+=======
+
+Comments are welcome: emiraga@gmail.com
