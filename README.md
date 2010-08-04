@@ -122,7 +122,7 @@ Multi-line statements
 Except for blank lines and comments, every line is a statement. However, there are two ways to make single statement span multiple lines (a.k.a. multi-line statements). Ending a line with back-slash:
 
     This is \
-	same statement
+	a statement
 
 And second way is with brackets:
 

@@ -23,7 +23,10 @@ def process_options(argv):
 	parser.add_argument('-e', '--execute', help="Command to execute Verilog compiler")
 	parser.add_argument('file', nargs='+')
 	args = parser.parse_args(argv)
-	exec_params = args.execute.split()
+	if args.execute:
+		exec_params = args.execute.split()
+	else:
+		exec_params = [False]
 	conv = Converter()
 	for file in args.file:
 		if not os.path.isfile(file):
@@ -32,7 +35,9 @@ def process_options(argv):
 			exec_params.append(file)
 		elif file.endswith('.vs'):
 			target_file = file[:-1] #remove ending 's'
-			conv.convert_vs(file, target_file)
+			if not os.path.exists(target_file) or \
+					os.path.getmtime(target_file) < os.path.getmtime(file):
+				conv.convert_vs(file, target_file)
 			exec_params.append(target_file)
 		else:
 			raise WrongFileType(file)
