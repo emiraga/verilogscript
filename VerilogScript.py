@@ -42,9 +42,7 @@ def process_options(argv):
 		else:
 			raise WrongFileType(file)
 	if exec_params[0]:
-		#print("EXEC"," ".join(exec_params))
 		p = subprocess.Popen(exec_params, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		#print('out',p.stdout.read())
 		for line in p.stdout:
 			print(line, end="")
 		error = False

@@ -38,8 +38,8 @@ class TestParseScript(unittest.TestCase):
 		ar(SyntaxError_,parse_script,"file",StringIO("initial 3:\n  a=3\n  b=1"), c)
 		ar(SyntaxError_,parse_script,"file",StringIO("function 3\n  a=3\n  b=1"), c)
 		ae(parse_script("file",StringIO("34\\\n45"), c)[0], ["3445;"])
-		ae(parse_script("file",StringIO("(34\n45)"), c)[0], ["(34\n45);"])
-		ae(parse_script("file",StringIO("(34\n    \t45)"), c)[0], ["(34\n    \t45);"])
+		ae(parse_script("file",StringIO("(34\n45)"), c)[0], ["(34 45);"])
+		ae(parse_script("file",StringIO("(34\n    \t45)"), c)[0], ["(34 45);"])
 		ar(SyntaxError_,parse_script,"file",StringIO("\\"), c)
 		ar(SyntaxError_,parse_script,"file",StringIO("("), c)
 		ar(SyntaxError_,parse_script,"file",StringIO("if 3:\nif 4:"), c)
@@ -59,6 +59,9 @@ class TestParseScript(unittest.TestCase):
 		
 		#testing of line mapping
 		ae(parse_script("file",StringIO("1\n\n\n2\n"), c), (["1;","2;"],{1:1, 2:4}))
+		ae(parse_script("file",StringIO("module a(\ninput A,\ninput B\n):\n  q=3\n  g=1"), c),
+			(["module a( input A, input B );","  q=3;","  g=1;", "endmodule"],
+			{1:4, 2:5, 3:6, 4:6}))
 class TestParseLine(unittest.TestCase):
 	def setUp(self):
 		self.error = SyntaxErrorGen('file')

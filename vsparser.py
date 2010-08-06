@@ -110,7 +110,7 @@ def parse_script(filename, file_open, config):
 			if len(rest) > 0 and rest[-1] == '\\':
 				rest = rest[:-1]
 			elif len(brackets) > 0:
-				rest += "\n"
+				rest += " "
 			else:
 				break #end of multi-line statement
 			try:
@@ -123,7 +123,7 @@ def parse_script(filename, file_open, config):
 				raise on_error.syntax("Unexpected EOF")
 			brackets, new = parse_line(
 					brackets, new.rstrip(), on_error, config.comment)
-			rest += new
+			rest += new.strip()
 		
 		start_bl = re.search(reBeginText,rest).group(0)
 		#Is this beginning of block statement?
