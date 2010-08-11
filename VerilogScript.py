@@ -50,7 +50,7 @@ def process_options(argv):
 			error = True
 			line = line.rstrip()
 			parts = line.split(':',2)
-			if len(parts) > 2:
+			if len(parts) > 2 and parts[1][0].isdigit():
 				parts[0], parts[1] = conv.convert_error(parts[0], int(parts[1]))
 				print('%s:%d:%s' %(parts[0], parts[1], parts[2]))
 			else:
