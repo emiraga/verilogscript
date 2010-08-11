@@ -10,7 +10,7 @@ VerilogScript adds couple of things to regular Verilog:
 Motivation
 ----------
 
-Being a new to Verilog, I was working on some design, 
+Being new to Verilog, I was working on some design, 
 when I started to wonder that Verilog might be missing some advances (in terms of it's syntax) 
 that modern languages such as python are offering. I decided to start the VerilogScript. 
 It is not a real parser/programming language (at least not yet), instead it is set of rules 
@@ -136,6 +136,8 @@ You can mix between `.vs` and `.v` files in parameters, you may also specify add
 Language specification
 ======================
 
+This is highly experimental language, and it is subject to incomplete specification and rapid change.
+
 Statements
 ----------
 
@@ -152,7 +154,9 @@ that contain only white space are empty statements. Lines with comment only are 
 
     //This is a comment
 
-VerilogScript follows off-side rule from python, but these rules don't apply to empty and statements with comments.
+Multi-line comments are not supported at the moment.
+
+VerilogScript follows off-side rule from python, but these rules do not apply to empty and statements with comments.
 Another way to express a empty statement is to use `pass` in one line. Contrary to previous empty statements,
 off-side rules (indentation) applies to `pass` statement. It can be used as a place-holder for a function 
 or conditional body that is not yet implemented. 
@@ -216,4 +220,4 @@ Comments are welcome: [emiraga@gmail.com](mailto:emiraga@gmail.com)
 TODO
 ====
 
-case begin end
+* case? add begin end automatically for cases
