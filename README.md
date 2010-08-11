@@ -19,8 +19,10 @@ for text transformation that are going to morph a certain VerilogScript syntax i
     always @ posedge clock:
         if reset:
             q <= 0
+            q_n <= 1
         else:
             q <= d
+            q_n <= !d
 
 New operators/keywords
 ======================
@@ -105,9 +107,10 @@ Preprocessor
 ============
 
 Verilog inherits a preprocessor from C/C++, however Python specifically is against it.
-And in fact, preprocessor is yet another language which has very little to do with Verilog itself.
+And, preprocessor is *another* language which has very little to do with Verilog itself.
+
 For now, I recommend usage of Verilog preprocessor only for defining constants (any alternatives?),
-and inclusing files.
+and including files.
 
     `define WIDTH_NUM [23:0]
 	`include "defines.v"
@@ -129,7 +132,7 @@ To resolve this issue you should let VerilogScript.py perform the compilation st
 First parameter `examples/simple.vs` will tell VerilogScript to convert this `.vs` file into a `.v` file. 
 Parameters `-e "iverilog"` will cause VerilogScript to execute a compiler after all conversions are done.
 
-You can mix between `.vs` and `.v` files in parameters, you may also specify additional compiler options, for example:
+You can mix between `.vs` and `.v` files in parameters, and also specify additional compiler options:
 
     VerilogScript.py file1.v file2.vs file3.v -e "iverilog -o sim.out"
 
