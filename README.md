@@ -72,10 +72,7 @@ VerilogScript:
 
 (Note: Ability to specify type/width of port inside a module declaration *is* available in newer Verilog.)
 
-One more example
-----------------
-
-Copied from [here](http://www.asic-world.com/verilog/verilog_one_day2.html), strange counter: 
+Another example, copied from [here](http://www.asic-world.com/verilog/verilog_one_day2.html), strange counter: 
 
     module counter (clk,rst,enable,count);
     input clk, rst, enable;
